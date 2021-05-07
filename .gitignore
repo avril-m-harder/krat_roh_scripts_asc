@@ -2,5 +2,4 @@ README_cluster.txt
 ./script_stdouts/*
 *.i*
 *.o*
-./archive/
-
+/home/aubaxh002/krat_roh_scripts_asc/archive/
