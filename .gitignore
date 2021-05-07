@@ -3,4 +3,4 @@ README_cluster.txt
 *.i*
 *.o*
 *.s[0-9]*
-./archive/*
+archive/
