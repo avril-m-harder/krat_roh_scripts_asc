@@ -1,0 +1,6 @@
+README_cluster.txt
+./script_stdouts/*
+*.i*
+*.o*
+./archive/*
+
