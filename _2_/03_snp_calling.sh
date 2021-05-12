@@ -21,19 +21,19 @@ USER=aubaxh002
 PROJ=03_variantcalling
 
 ## Set batch group
-GROUP=_group_
+GROUP=_2_
 
 ## Create a directory on /scratch
-mkdir /scratch/${USER}_${PROJ}/_group_
+mkdir /scratch/${USER}_${PROJ}/_2_
 
 ## Set permissions for directory
-chmod 700 /scratch/${USER}_${PROJ}/_group_
+chmod 700 /scratch/${USER}_${PROJ}/_2_
 
 ##  Copy input files to scratch
 # cp /home/$USER/$PROJ/input/* /scratch/${USER}_${PROJ}/
 
 ## cd into working scratch directory
-cd /scratch/${USER}_${PROJ}/_group_
+cd /scratch/${USER}_${PROJ}/_2_
 
 
 ## --------------------------------
@@ -48,11 +48,11 @@ module load picard/1.79
 while read -a line
 	do
 	java -jar /opt/asn/apps/picard_1.79/picard_1.79/picard-tools-1.79/MarkDuplicates.jar \
-	I=/scratch/aubaxh002_02_read_mapping/_group_/${line[0]}_small_genome_sorted.bam \
+	I=/scratch/aubaxh002_02_read_mapping/_2_/${line[0]}_small_genome_sorted.bam \
 	O=${line[0]}_small_genome_dupmarked.bam \
 	M=${line[0]}_markdup_metrics.txt \
 	MAX_RECORDS_IN_RAM=250000
-	done < /home/aubaxh002/sample_lists/_group_.txt
+	done < /home/aubaxh002/sample_lists/_2_.txt
 
 
 ## --------------------------------
