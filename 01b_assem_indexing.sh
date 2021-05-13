@@ -42,7 +42,7 @@ module load bwa/0.7.12
 
 ## --------------------------------
 ## Unzip FASTA and create indexes needed for GATK Best Practices
-gunzip hifiasm_kangaroo_rat_6cells.p_ctg.fasta.gz
+# gunzip hifiasm_kangaroo_rat_6cells.p_ctg.fasta.gz
 
 bwa index hifiasm_kangaroo_rat_6cells.p_ctg.fasta
 
