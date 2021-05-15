@@ -24,10 +24,10 @@ PROJ=03_variantcalling
 GROUP=_1_
 
 ## Create a directory on /scratch
-mkdir /scratch/${USER}_${PROJ}/_1_
+# mkdir /scratch/${USER}_${PROJ}/_1_
 
 ## Set permissions for directory
-chmod 700 /scratch/${USER}_${PROJ}/_1_
+# chmod 700 /scratch/${USER}_${PROJ}/_1_
 
 ##  Copy input files to scratch
 # cp /home/$USER/$PROJ/input/* /scratch/${USER}_${PROJ}/
@@ -37,13 +37,14 @@ cd /scratch/${USER}_${PROJ}/_1_
 
 
 ## --------------------------------
-## Load modules 
-module load samtools/1.11
+## Load modules
+# module load samtools/1.11
 module load picard/1.79
-module load gatk/3.4-46
+module load gatk/4.1.4.0
+module list
 
 ## --------------------------------
-## Mark duplicate reads
+## Mark duplicate reads -- ALREADY DONE FOR ALL SAMPLES
 # while read -a line
 # do
 # java -jar /opt/asn/apps/picard_1.79/picard_1.79/picard-tools-1.79/MarkDuplicates.jar \
@@ -63,32 +64,16 @@ module load gatk/3.4-46
 
 
 ## --------------------------------
-## Performing local realignment around indels -- only supported in gatk v<3.6
-## generate list of intervals to be realigned
-gatk -T RealignerTargetCreator \
--R /scratch/aubaxh002_assem_indexing/hifiasm_kangaroo_rat_6cells.p_ctg.fasta \
--I 4058_S46_small_genome_dupmarked_rgroups.bam \
--o 4058_S46_target_intervals.list
-
-## perform realignment
-gatk -T IndelRealigner \
--R /scratch/aubaxh002_assem_indexing/hifiasm_kangaroo_rat_6cells.p_ctg.fasta \
--I 4058_S46_small_genome_dupmarked_rgroups.bam \
--targetIntervals 4058_S46_target_intervals.list \
--o 4058_S46_small_genome_dupmarked_rgroups_realigned.bam
-
-
-## --------------------------------
 ## Fix mate information
 java -jar /opt/asn/apps/picard_1.79/picard_1.79/picard-tools-1.79/FixMateInformation.jar \
-I=4058_S46_small_genome_dupmarked_rgroups_realigned.bam \
-O=4058_S46_small_genome_dupmarked_rgroups_realigned_fixmate.bam
+I=4058_S46_small_genome_dupmarked_rgroups.bam \
+O=4058_S46_small_genome_dupmarked_rgroups_fixmate.bam
 
 
 ## --------------------------------
 ## Index BAM files
 java -jar /opt/asn/apps/picard_1.79/picard_1.79/picard-tools-1.79/BuildBamIndex.jar \
-I=4058_S46_small_genome_dupmarked_rgroups_realigned_fixmate.bam
+I=4058_S46_small_genome_dupmarked_rgroups_fixmate.bam
 
 
 ## --------------------------------
@@ -97,10 +82,7 @@ I=4058_S46_small_genome_dupmarked_rgroups_realigned_fixmate.bam
 ## 03_snp_calling_w_recal.sh
 
 ## --------------------------------
-## Run HaplotypeCaller in GVCF mode using GATK v4
-module unload gatk/3.4-46
-module load gatk/4.1.4.0
-
+## Run HaplotypeCaller in GVCF mode
 gatk HaplotypeCaller \
 -R /scratch/aubaxh002_assem_indexing/hifiasm_kangaroo_rat_6cells.p_ctg.fasta \
 -I 4058_S46_small_genome_dupmarked_rgroups_realigned_fixmate.bam \
