@@ -81,10 +81,13 @@ module list
 
 
 ## --------------------------------
+## Identify high-confidence variants to use as "known sites" for BQSR
+## --------------------------------
 ## Run HaplotypeCaller in GVCF mode
 gatk HaplotypeCaller \
 -R /scratch/aubaxh002_assem_indexing/hifiasm_kangaroo_rat_6cells.p_ctg.fasta \
 -I 4058_S46_small_genome_dupmarked_rgroups_fixmate.bam \
+-stand-call-conf 20.0 \
 --emit-ref-confidence GVCF \
 -O 4058_S46_nobaseQrecal.g.vcf
 
