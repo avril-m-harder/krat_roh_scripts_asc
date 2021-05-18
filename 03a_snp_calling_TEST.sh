@@ -1,5 +1,9 @@
 #!/bin/bash
 #
+#  +-------------+
+#  |REQUEST 4 CPU|
+#  +-------------+
+#
 #  Replace the USER name in this script with your username and
 #  call your project whatever you want
 #
@@ -65,26 +69,61 @@ module list
 
 ## --------------------------------
 ## Fix mate information
-java -jar /opt/asn/apps/picard_1.79/picard_1.79/picard-tools-1.79/FixMateInformation.jar \
-I=4058_S46_small_genome_dupmarked_rgroups.bam \
-O=4058_S46_small_genome_dupmarked_rgroups_fixmate.bam
+# java -jar /opt/asn/apps/picard_1.79/picard_1.79/picard-tools-1.79/FixMateInformation.jar \
+# I=4058_S46_small_genome_dupmarked_rgroups.bam \
+# O=4058_S46_small_genome_dupmarked_rgroups_fixmate.bam
 
 
 ## --------------------------------
 ## Index BAM files
-java -jar /opt/asn/apps/picard_1.79/picard_1.79/picard-tools-1.79/BuildBamIndex.jar \
-I=4058_S46_small_genome_dupmarked_rgroups_fixmate.bam
+# java -jar /opt/asn/apps/picard_1.79/picard_1.79/picard-tools-1.79/BuildBamIndex.jar \
+# I=4058_S46_small_genome_dupmarked_rgroups_fixmate.bam
 
-
-## --------------------------------
-## Recalibrate base quality scores (??)
-## Run without this step here, run from here down with this step in another script:
-## 03_snp_calling_w_recal.sh
 
 ## --------------------------------
 ## Run HaplotypeCaller in GVCF mode
 gatk HaplotypeCaller \
 -R /scratch/aubaxh002_assem_indexing/hifiasm_kangaroo_rat_6cells.p_ctg.fasta \
--I 4058_S46_small_genome_dupmarked_rgroups_realigned_fixmate.bam \
+-I 4058_S46_small_genome_dupmarked_rgroups_fixmate.bam \
 --emit-ref-confidence GVCF \
 -O 4058_S46_nobaseQrecal.g.vcf
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
