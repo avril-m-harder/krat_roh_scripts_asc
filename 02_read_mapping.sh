@@ -55,13 +55,13 @@ while read -a line
 do
 
 bwa mem -t 20 -M ../hifiasm_kangaroo_rat_6cells.p_ctg.fasta.gz \
-trimmed_paired_${line[0]}_L003_R1.fastq.gz \
-trimmed_paired_${line[0]}_L003_R2.fastq.gz \
+/scratch/aubaxh002_01_read_qc_trimming/_group_/trimmed_paired_${line[0]}_L003_R1_001.fastq.gz \
+/scratch/aubaxh002_01_read_qc_trimming/_group_/trimmed_paired_${line[0]}_L003_R2_001.fastq.gz \
 > ${line[0]}_L003_small_genome.bam
 
 bwa mem -t 20 -M ../hifiasm_kangaroo_rat_6cells.p_ctg.fasta.gz \
-trimmed_paired_${line[0]}_L004_R1.fastq.gz \
-trimmed_paired_${line[0]}_L004_R2.fastq.gz \
+/scratch/aubaxh002_01_read_qc_trimming/_group_/trimmed_paired_${line[0]}_L004_R1_001.fastq.gz \
+/scratch/aubaxh002_01_read_qc_trimming/_group_/trimmed_paired_${line[0]}_L004_R2_001.fastq.gz \
 > ${line[0]}_L004_small_genome.bam
 
 ## add read group information to differentiate the two lanes (3 and 4)
