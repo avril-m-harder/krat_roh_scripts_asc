@@ -42,45 +42,55 @@ cd /scratch/${USER}_${PROJ}/_3_/
 ## Load modules
 module load bwa/0.7.12
 module load samtools/1.11
+module load picard/1.79
 #module load bedtools/2.29.2
 
 ## Index reference genome file
 # bwa index hifiasm_kangaroo_rat_6cells.p_ctg.fasta.gz
 
-## --------------------------------
-## Combine reads from different lanes within sample + forward/reverse for each sample
-while read -a line
-do
-cat /scratch/aubaxh002_01_read_qc_trimming/_3_/trimmed_paired_${line[0]}_L003_R1_001.fastq.gz \
-/scratch/aubaxh002_01_read_qc_trimming/_3_/trimmed_paired_${line[0]}_L004_R1_001.fastq.gz > \
-trimmed_paired_${line[0]}_R1.fastq.gz
-cat /scratch/aubaxh002_01_read_qc_trimming/_3_/trimmed_paired_${line[0]}_L003_R2_001.fastq.gz \
-/scratch/aubaxh002_01_read_qc_trimming/_3_/trimmed_paired_${line[0]}_L004_R2_001.fastq.gz > \
-trimmed_paired_${line[0]}_R2.fastq.gz
-done < /home/aubaxh002/sample_lists/_3_.txt
-
 
 ## --------------------------------
-## Align reads to default (smaller) genome
+## Align reads to default (smaller) genome - keep lanes separate for now
 while read -a line
 do
+
 bwa mem -t 20 -M ../hifiasm_kangaroo_rat_6cells.p_ctg.fasta.gz \
-trimmed_paired_${line[0]}_R1.fastq.gz \
-trimmed_paired_${line[0]}_R2.fastq.gz \
-> ${line[0]}_small_genome.bam
+/scratch/aubaxh002_01_read_qc_trimming/_3_/trimmed_paired_${line[0]}_L003_R1_001.fastq.gz \
+/scratch/aubaxh002_01_read_qc_trimming/_3_/trimmed_paired_${line[0]}_L003_R2_001.fastq.gz \
+> ${line[0]}_L003_small_genome.bam
+
+bwa mem -t 20 -M ../hifiasm_kangaroo_rat_6cells.p_ctg.fasta.gz \
+/scratch/aubaxh002_01_read_qc_trimming/_3_/trimmed_paired_${line[0]}_L004_R1_001.fastq.gz \
+/scratch/aubaxh002_01_read_qc_trimming/_3_/trimmed_paired_${line[0]}_L004_R2_001.fastq.gz \
+> ${line[0]}_L004_small_genome.bam
+
+## add read group information to differentiate the two lanes (3 and 4)
+java -jar /opt/asn/apps/picard_1.79/picard_1.79/picard-tools-1.79/AddOrReplaceReadGroups.jar \
+I=${line[0]}_L003_small_genome.bam \
+O=${line[0]}_L003_small_genome_rgroups.bam \
+SORT_ORDER=coordinate RGID=group1 RGLB=lib1 RGPL=illumina RGSM=4058_S46 RGPU=unit3
+
+java -jar /opt/asn/apps/picard_1.79/picard_1.79/picard-tools-1.79/AddOrReplaceReadGroups.jar \
+I=${line[0]}_L004_small_genome.bam \
+O=${line[0]}_L004_small_genome_rgroups.bam \
+SORT_ORDER=coordinate RGID=group1 RGLB=lib1 RGPL=illumina RGSM=4058_S46 RGPU=unit4
+
+## merge BAM files within each sample
+java -jar /opt/asn/apps/picard_1.79/picard_1.79/picard-tools-1.79/MergeSamFiles.jar \
+I=${line[0]}_L003_small_genome_rgroups.bam \
+I=${line[0]}_L004_small_genome_rgroups.bam \
+SORT_ORDER=coordinate \
+O=sorted_${line[0]}_small_genome_rgroups.bam
+
+## get some mapping stats
+samtools flagstat -@ 20 -O tsv ${line[0]}_small_genome_rgroups.bam > ${line[0]}_rgroups_flagstat_out.txt
+
 done < /home/aubaxh002/sample_lists/_3_.txt
 
-## --------------------------------
-## Sort bam files and get some mapping stats on them
-while read -a line
-do
-samtools sort ${line[0]}_small_genome.bam -o ${line[0]}_small_genome_sorted.bam
-samtools flagstat -@ 20 -O tsv ${line[0]}_small_genome_sorted.bam > ${line[0]}_flagstat_out.txt
-done < /home/aubaxh002/sample_lists/_3_.txt
 
 ## --------------------------------
 
 ## Copy results back to project output directory (in home)
-cp *sorted.bam /home/$USER/$PROJ/output/sorted_bam_files/
-cp *_flagstat_out.txt home/$USER/$PROJ/output/flagstat_out/
+cp sorted_*_small_genome_rgroups.bam /home/$USER/$PROJ/output/sorted_bam_files/
+cp *_rgroups_flagstat_out.txt home/$USER/$PROJ/output/flagstat_out/
 
