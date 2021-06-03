@@ -17,7 +17,7 @@ DIRECTORY6 = _6_
 DIRECTORY7 = _7_
 DIRECTORY8 = _8_
 
-FILE1 = 03a_preBQSR_snp_calling.sh
+FILE1 = rename_samps_in_vcfs.sh
 
 all:
 	@echo "Please type....."

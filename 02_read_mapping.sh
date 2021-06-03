@@ -65,6 +65,9 @@ bwa mem -t 20 -M ../hifiasm_kangaroo_rat_6cells.p_ctg.fasta.gz \
 > ${line[0]}_L004_small_genome.bam
 
 ## add read group information to differentiate the two lanes (3 and 4)
+### (this of course leads to a problem later when trying to process GVCF files for all 
+### samples simultaneously because I named every sample 4058_S46 instead of ${line[0]}.
+### samples are renamed in VCF files before combining in 03b_noBQSR_genomicsdb.sh)
 java -jar /opt/asn/apps/picard_1.79/picard_1.79/picard-tools-1.79/AddOrReplaceReadGroups.jar \
 I=${line[0]}_L003_small_genome.bam \
 O=${line[0]}_L003_small_genome_rgroups.bam \
