@@ -34,9 +34,11 @@ module load picard/1.79
 while read -a line
 do
 
-gatk RenameSampleInVcf \
-	-I /scratch/aubaxh002_03a_preBQSR_snp_calling/${line[0]}_nobaseQrecal.g.vcf \
-	-O sampfix_${line[0]}_nobaseQrecal.g.vcf \
-	--NEW_SAMPLE_NAME ${line[0]}
+# gatk RenameSampleInVcf \
+# 	-I /scratch/aubaxh002_03a_preBQSR_snp_calling/${line[0]}_nobaseQrecal.g.vcf \
+# 	-O sampfix_${line[0]}_nobaseQrecal.g.vcf \
+# 	--NEW_SAMPLE_NAME ${line[0]}
+	
+gatk IndexFeatureFile -F sampfix_${line[0]}_nobaseQrecal.g.vcf
 	
 done < /home/aubaxh002/sample_lists/_2_.txt

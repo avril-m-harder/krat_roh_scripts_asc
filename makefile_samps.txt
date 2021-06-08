@@ -7,19 +7,17 @@
 PATHDIR = /home/aubaxh002/krat_roh_scripts_asc
 
 ## Each directory will only contain the scripts used to process that particular
-## group of contigs. Scripts will be held in /home/, data will be processed in /scratch/.
-DIRECTORY1 = _c1_
-DIRECTORY2 = _c2_
-DIRECTORY3 = _c3_
-DIRECTORY4 = _c4_
-DIRECTORY5 = _c5_
-DIRECTORY6 = _c6_
-DIRECTORY7 = _c7_
-DIRECTORY8 = _c8_
-DIRECTORY9 = _c9_
-DIRECTORY10 = _c10_
+## group of samples. Scripts will be held in /home/, data will be processed in /scratch/.
+DIRECTORY1 = _1_
+DIRECTORY2 = _2_
+DIRECTORY3 = _3_
+DIRECTORY4 = _4_
+DIRECTORY5 = _5_
+DIRECTORY6 = _6_
+DIRECTORY7 = _7_
+DIRECTORY8 = _8_
 
-FILE1 = 03b_noBQSR_genomicsdb_contig_batches.sh
+FILE1 = rename_samps_in_vcfs.sh
 
 all:
 	@echo "Please type....."
@@ -37,8 +35,6 @@ directories:
 	mkdir $(PATHDIR)/$(DIRECTORY6)
 	mkdir $(PATHDIR)/$(DIRECTORY7)
 	mkdir $(PATHDIR)/$(DIRECTORY8)
-	mkdir $(PATHDIR)/$(DIRECTORY9)
-	mkdir $(PATHDIR)/$(DIRECTORY10)
 
 scripts:
 	cp -r $(PATHDIR)/$(FILE1) $(PATHDIR)/$(DIRECTORY1)/$(FILE1)
@@ -49,8 +45,6 @@ scripts:
 	cp -r $(PATHDIR)/$(FILE1) $(PATHDIR)/$(DIRECTORY6)/$(FILE1)
 	cp -r $(PATHDIR)/$(FILE1) $(PATHDIR)/$(DIRECTORY7)/$(FILE1)
 	cp -r $(PATHDIR)/$(FILE1) $(PATHDIR)/$(DIRECTORY8)/$(FILE1)
-	cp -r $(PATHDIR)/$(FILE1) $(PATHDIR)/$(DIRECTORY9)/$(FILE1)
-	cp -r $(PATHDIR)/$(FILE1) $(PATHDIR)/$(DIRECTORY10)/$(FILE1)
 
 setgroup:
 	@echo "Here we go set groups"
@@ -62,5 +56,3 @@ setgroup:
 	sed -i 's/_group_/$(DIRECTORY6)/g' $(PATHDIR)/$(DIRECTORY6)/$(FILE1)
 	sed -i 's/_group_/$(DIRECTORY7)/g' $(PATHDIR)/$(DIRECTORY7)/$(FILE1)
 	sed -i 's/_group_/$(DIRECTORY8)/g' $(PATHDIR)/$(DIRECTORY8)/$(FILE1)
-	sed -i 's/_group_/$(DIRECTORY9)/g' $(PATHDIR)/$(DIRECTORY9)/$(FILE1)
-	sed -i 's/_group_/$(DIRECTORY10)/g' $(PATHDIR)/$(DIRECTORY10)/$(FILE1)

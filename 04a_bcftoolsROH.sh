@@ -21,13 +21,10 @@ USER=aubaxh002
 PROJ=04a_bcftoolsROH
 
 ## Create a directory on /scratch
-mkdir /scratch/${USER}_${PROJ}/
+# mkdir /scratch/${USER}_${PROJ}/
 
 ## Set permissions for directory
-chmod 700 /scratch/${USER}_${PROJ}/
-
-##  Copy input files to scratch
-cp /home/$USER/$PROJ/input/* /scratch/${USER}_${PROJ}/
+# chmod 700 /scratch/${USER}_${PROJ}/
 
 ## cd into working scratch directory
 cd /scratch/${USER}_${PROJ}/
@@ -79,6 +76,13 @@ module load bcftools/1.10.2
 ## --------------------------------
 ## Try ROH calling with AF estimation using GT, compare with PL estimation output
 
-bcftools roh --estimate-AF GT,- --threads 20 -o all_samples_GT_AFest_roh.txt [input_vcf]
+## SNPs filtered using more stringent criteria
+bcftools roh --estimate-AF GT,- --threads 20 \
+-o all_samples_GT_AFest_roh_morestringent.txt \
+-r ptg000003l \
+/scratch/aubaxh002_03b_noBQSR_genomicsdb/all_samples_nobaseQrecal_filtered_SNPs_only.vcf.gz
 
-bcftools roh --estimate-AF PL,- --threads 20 -o all_samples_PL_AFest_roh.txt [input_vcf] 
+bcftools roh --estimate-AF PL,- --threads 20 \
+-o all_samples_PL_AFest_roh_morestringent.txt \
+-r ptg000003l \
+/scratch/aubaxh002_03b_noBQSR_genomicsdb/all_samples_nobaseQrecal_filtered_SNPs_only.vcf.gz 

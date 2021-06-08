@@ -51,14 +51,15 @@ module load picard/1.79
 # 	
 # done < /home/aubaxh002/krat_roh_scripts_asc/sample_list.txt
 
+
 ## --------------------------------
 ## Genotype GVCFs across all samples simultaneously --
 ## Only analyzes variants on contigs of minimum length specified in contig filename
 ref=/scratch/aubaxh002_assem_indexing/hifiasm_kangaroo_rat_6cells.p_ctg.fasta
 
-# while read -a line
-# do
-# 
+while read -a line
+do
+
 # gatk GenomicsDBImport \
 # 	-V sampfix_3811_S67_nobaseQrecal.g.vcf \
 # 	-V sampfix_3850_S45_nobaseQrecal.g.vcf \
@@ -118,7 +119,7 @@ ref=/scratch/aubaxh002_assem_indexing/hifiasm_kangaroo_rat_6cells.p_ctg.fasta
 # 	
 # gatk VariantFiltration \
 # 	-R $ref \
-# 	-V ${line[0]}_genotype_output_nobaseQrecal.vcf
+# 	-V ${line[0]}_genotype_output_nobaseQrecal.vcf \
 # 	-O ${line[0]}_genotype_output_nobaseQrecal_filtered.vcf \
 # 	--filter-name "QD" \
 # 	--filter-expression "QD < 2.0" \
@@ -133,8 +134,7 @@ ref=/scratch/aubaxh002_assem_indexing/hifiasm_kangaroo_rat_6cells.p_ctg.fasta
 # 	--filter-name "ReadPosRankSum" \
 # 	--filter-expression "ReadPosRankSum < -8.0"
 
-## pretty stringent filtering criteria I think? can revisit flagged VCF file in R 
-## to check effect of filters
+## pretty stringent filtering criteria I think? another set of criteria is below
 # gatk SelectVariants \
 # 	-R $ref \
 # 	-V ${line[0]}_genotype_output_nobaseQrecal_filtered.vcf \
@@ -143,45 +143,35 @@ ref=/scratch/aubaxh002_assem_indexing/hifiasm_kangaroo_rat_6cells.p_ctg.fasta
 # 	-O filtered_${line[0]}_nobaseQrecal_SNPs.vcf
 # 
 # echo ${line[0]} >> done_contigs.txt
-# 
-# done < /home/aubaxh002/krat_roh_scripts_asc/contigs_100kb.txt
-
-## --------------------------------
-## Make list files of VCFs to combine
-# ls *nobaseQrecal.vcf > unfiltered_contig_nobaseQrecal_vcf_files.list
-# ls *filtered.vcf > filter_flagged_contig_vcf_files.list
-# ls filtered*SNPs.vcf > filtered_SNPs_only_vcf_files.list
-ls *filtered_less_stringent.vcf > filter_flagged_less_stringent_contig_vcf_files.list
-ls filtered*less_stringent.vcf > filtered_SNPs_only_less_stringent_vcf_files.list
 
 
 ## --------------------------------
-## Combine VCF files
-# gatk MergeVcfs \
-# 	-I unfiltered_contig_nobaseQrecal_vcf_files.list \
-# 	-O all_samples_nobaseQrecal_unfiltered.vcf.gz
+## A second set of less stringent criteria
+gatk VariantFiltration \
+	-R $ref \
+	-V ${line[0]}_genotype_output_nobaseQrecal.vcf \
+	-O ${line[0]}_genotype_output_nobaseQrecal_filtered_less_stringent.vcf \
+	--filter-name "QD" \
+	--filter-expression "QD < 2.0" \
+	--filter-name "FS" \
+	--filter-expression "FS > 40.0" \
+	--filter-name "SOR" \
+	--filter-expression "SOR > 5.0" \
+	--filter-name "MQ" \
+	--filter-expression "MQ < 20.0" \
+	--filter-name "MQRankSum" \
+	--filter-expression " MQRankSum < -3.0 || MQRankSum > 3.0" \
+	--filter-name "ReadPosRankSum" \
+	--filter-expression "ReadPosRankSum < -8.0"
 
-## keep this unfiltered vcf file in the home directory
-# cp all_samples_nobaseQrecal_unfiltered.vcf.gz /home/aubaxh002/03_snp_calling/output/
-# 
-# gatk MergeVcfs \
-# 	-I filter_flagged_contig_vcf_files.list \
-# 	-O all_samples_nobaseQrecal_filter_flagged.vcf.gz
-# 
-# gatk MergeVcfs \
-# 	-I filtered_SNPs_only_vcf_files.list \
-# 	-O all_samples_nobaseQrecal_filtered_SNPs_only.vcf.gz
+gatk SelectVariants \
+	-R $ref \
+	-V ${line[0]}_genotype_output_nobaseQrecal_filtered_less_stringent.vcf \
+	--select-type-to-include SNP \
+	-select 'vc.isNotFiltered()' \
+	-O filtered_${line[0]}_nobaseQrecal_SNPs_less_stringent.vcf
 
-gatk MergeVcfs \
-	-I filter_flagged_less_stringent_contig_vcf_files.list \
-	-O all_samples_nobaseQrecal_filter_flagged_less_stringent.vcf.gz
+echo ${line[0]} >> round2_done_contigs.txt
 
-gatk MergeVcfs \
-	-I filtered_SNPs_only_less_stringent_vcf_files.list \
-	-O all_samples_nobaseQrecal_filtered_SNPs_only_less_stringent.vcf.gz
-
-
-
-
-
+done < /home/aubaxh002/100kb_contig_lists/_c1_.txt
 
