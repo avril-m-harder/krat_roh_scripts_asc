@@ -192,5 +192,5 @@ gatk SelectVariants \
 
 echo ${line[0]} >> round2_done_contigs.txt
 
-done < /home/aubaxh002/100kb_contig_lists/_group_.txt
+done < /home/aubaxh002/100kb_contig_lists/_c5_.txt
 

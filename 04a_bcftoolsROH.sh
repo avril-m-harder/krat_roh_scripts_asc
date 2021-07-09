@@ -31,8 +31,9 @@ cd /scratch/${USER}_${PROJ}/
 
 
 ## --------------------------------
-## Load module 
+## Load modules
 module load bcftools/1.10.2
+module load samtools/1.11
 
 ## bcftools roh details
 ## other info: https://samtools.github.io/bcftools/howtos/roh-calling.html
@@ -74,15 +75,101 @@ module load bcftools/1.10.2
 ##     -V, --viterbi-training <float>     estimate HMM parameters, <float> is the convergence threshold, e.g. 1e-10 (experimental)
 
 ## --------------------------------
+## Generate allele frequency files for use with bcftools roh & index
+# bcftools query -f'%CHROM\t%POS\t%REF,%ALT\t%INFO/AF\n' \
+# /scratch/aubaxh002_03b_noBQSR_genomicsdb/all_samples_nobaseQrecal_filtered_SNPs_only.vcf.gz \
+# | bgzip -c > freqs_morestringent_filteredSNPsonly.tab.gz
+# 
+# tabix -s1 -b2 -e2 freqs_morestringent_filteredSNPsonly.tab.gz
+# 
+# bcftools query -f'%CHROM\t%POS\t%REF,%ALT\t%INFO/AF\n' \
+# /scratch/aubaxh002_03b_noBQSR_genomicsdb/all_samples_nobaseQrecal_filtered_SNPs_only_less_stringent.vcf.gz \
+# | bgzip -c > freqs_lessstringent_filteredSNPsonly.tab.gz
+# 
+# tabix -s1 -b2 -e2 freqs_lessstringent_filteredSNPsonly.tab.gz
+
+# bcftools query -f'%CHROM\t%POS\t%REF,%ALT\t%INFO/AF\n' \
+# /scratch/aubaxh002_03b_noBQSR_genomicsdb/all_samples_nobaseQrecal_filtered_SNPs_only_less_stringent_nearindelfilt.vcf.gz \
+# | bgzip -c > freqs_lessstringent_filteredSNPsonly_nearindelfilt.tab.gz
+# 
+# tabix -s1 -b2 -e2 freqs_lessstringent_filteredSNPsonly_nearindelfilt.tab.gz
+# 
+# bcftools query -f'%CHROM\t%POS\t%REF,%ALT\t%INFO/AF\n' \
+# /scratch/aubaxh002_03b_noBQSR_genomicsdb/all_samples_nobaseQrecal_filtered_SNPs_only_less_stringent_nearindelfilt_missdatafilt.recode.vcf.gz \
+# | bgzip -c > freqs_lessstringent_filteredSNPsonly_nearindelfilt_missdatafilt.tab.gz
+# 
+# tabix -s1 -b2 -e2 freqs_lessstringent_filteredSNPsonly_nearindelfilt_missdatafilt.tab.gz
+
+## --------------------------------
 ## Try ROH calling with AF estimation using GT, compare with PL estimation output
 
 ## SNPs filtered using more stringent criteria
-bcftools roh --estimate-AF GT,- --threads 20 \
--o all_samples_GT_AFest_roh_morestringent.txt \
--r ptg000003l \
-/scratch/aubaxh002_03b_noBQSR_genomicsdb/all_samples_nobaseQrecal_filtered_SNPs_only.vcf.gz
+# bcftools roh \
+# --GTs-only 30 \
+# --threads 20 \
+# -o all_samples_GTonly_AFest_roh_morestringent.txt \
+# --AF-file freqs_morestringent_filteredSNPsonly.tab.gz \
+# /scratch/aubaxh002_03b_noBQSR_genomicsdb/all_samples_nobaseQrecal_filtered_SNPs_only.vcf.gz
+# 
+# bcftools roh \
+# --threads 20 \
+# -o all_samples_GTPL_AFest_roh_morestringent.txt \
+# --AF-file freqs_morestringent_filteredSNPsonly.tab.gz \
+# /scratch/aubaxh002_03b_noBQSR_genomicsdb/all_samples_nobaseQrecal_filtered_SNPs_only.vcf.gz
 
-bcftools roh --estimate-AF PL,- --threads 20 \
--o all_samples_PL_AFest_roh_morestringent.txt \
--r ptg000003l \
-/scratch/aubaxh002_03b_noBQSR_genomicsdb/all_samples_nobaseQrecal_filtered_SNPs_only.vcf.gz 
+## SNPs filtered using less stringent criteria
+# bcftools roh \
+# --GTs-only 30 \
+# --threads 20 \
+# -o all_samples_GTonly_AFest_roh_lessstringent.txt \
+# --AF-file freqs_lessstringent_filteredSNPsonly.tab.gz \
+# /scratch/aubaxh002_03b_noBQSR_genomicsdb/all_samples_nobaseQrecal_filtered_SNPs_only_less_stringent.vcf.gz
+# 
+# bcftools roh \
+# --threads 20 \
+# -o all_samples_GTPL_AFest_roh_lessstringent.txt \
+# --AF-file freqs_lessstringent_filteredSNPsonly.tab.gz \
+# /scratch/aubaxh002_03b_noBQSR_genomicsdb/all_samples_nobaseQrecal_filtered_SNPs_only_less_stringent.vcf.gz
+
+## and with SNPs near indels filtered out, retaining only biallelic sites
+# bcftools roh \
+# --threads 20 \
+# -o all_samples_GTPL_AFest_roh_lessstringent_nearindelfilt.txt \
+# --AF-file freqs_lessstringent_filteredSNPsonly_nearindelfilt.tab.gz \
+# /scratch/aubaxh002_03b_noBQSR_genomicsdb/all_samples_nobaseQrecal_filtered_SNPs_only_less_stringent_nearindelfilt.vcf.gz 
+
+# bcftools roh \
+# --threads 20 \
+# --GTs-only 30 \
+# -o all_samples_GTonly_AFest_roh_lessstringent_nearindelfilt.txt \
+# --AF-file freqs_lessstringent_filteredSNPsonly_nearindelfilt.tab.gz \
+# /scratch/aubaxh002_03b_noBQSR_genomicsdb/all_samples_nobaseQrecal_filtered_SNPs_only_less_stringent_nearindelfilt.vcf.gz 
+
+## and with SNPs near indels filtered out, retaining only biallelic sites, and only sites 
+## with <20% missing data
+# bcftools roh \
+# --threads 20 \
+# -o all_samples_GTPL_AFest_roh_lessstringent_nearindelfilt_missdatafilt.txt \
+# --AF-file freqs_lessstringent_filteredSNPsonly_nearindelfilt_missdatafilt.tab.gz \
+# /scratch/aubaxh002_03b_noBQSR_genomicsdb/all_samples_nobaseQrecal_filtered_SNPs_only_less_stringent_nearindelfilt_missdatafilt.recode.vcf.gz 
+
+# bcftools roh \
+# --threads 20 \
+# --GTs-only 30 \
+# -o all_samples_GTonly_AFest_roh_lessstringent_nearindelfilt_missdatafilt.txt \
+# --AF-file freqs_lessstringent_filteredSNPsonly_nearindelfilt_missdatafilt.tab.gz \
+# /scratch/aubaxh002_03b_noBQSR_genomicsdb/all_samples_nobaseQrecal_filtered_SNPs_only_less_stringent_nearindelfilt_missdatafilt.recode.vcf.gz 
+
+## --------------------------------
+## Extract information on ROHs (i.e., exclude information on individual sites)
+grep "^RG" all_samples_GTPL_AFest_roh_lessstringent_nearindelfilt.txt >\
+all_samples_GTPL_AFest_roh_lessstringent_nearindelfilt_RG_ONLY.txt
+
+grep "^RG" all_samples_GTonly_AFest_roh_lessstringent_nearindelfilt.txt >\
+all_samples_GTonly_AFest_roh_lessstringent_nearindelfilt_RG_ONLY.txt
+
+grep "^RG" all_samples_GTPL_AFest_roh_lessstringent_nearindelfilt_missdatafilt.txt >\
+all_samples_GTPL_AFest_roh_lessstringent_nearindelfilt_missdatafilt_RG_ONLY.txt
+
+grep "^RG" all_samples_GTonly_AFest_roh_lessstringent_nearindelfilt_missdatafilt.txt >\
+all_samples_GTonly_AFest_roh_lessstringent_nearindelfilt_missdatafilt_RG_ONLY.txt

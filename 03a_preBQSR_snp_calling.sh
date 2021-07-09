@@ -53,7 +53,7 @@ cp /home/aubaxh002/02_read_mapping/output/sorted_bam_files/sorted_${line[0]}_sma
 done < /home/aubaxh002/sample_lists/_group_.txt
 
 ## --------------------------------
-## Mark duplicate reads
+## Mark duplicate reads - GATK tools ignore them, no need to remove, just flag
 while read -a line
 do
 java -jar /opt/asn/apps/picard_1.79/picard_1.79/picard-tools-1.79/MarkDuplicates.jar \

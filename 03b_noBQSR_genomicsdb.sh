@@ -34,6 +34,7 @@ cd /scratch/${USER}_${PROJ}/
 ## Load modules 
 module load gatk/4.1.4.0
 module load picard/1.79
+module load vcftools/0.1.14
 
 
 ## --------------------------------
@@ -151,8 +152,10 @@ ref=/scratch/aubaxh002_assem_indexing/hifiasm_kangaroo_rat_6cells.p_ctg.fasta
 # ls *nobaseQrecal.vcf > unfiltered_contig_nobaseQrecal_vcf_files.list
 # ls *filtered.vcf > filter_flagged_contig_vcf_files.list
 # ls filtered*SNPs.vcf > filtered_SNPs_only_vcf_files.list
-ls *filtered_less_stringent.vcf > filter_flagged_less_stringent_contig_vcf_files.list
-ls filtered*less_stringent.vcf > filtered_SNPs_only_less_stringent_vcf_files.list
+# ls *filtered_less_stringent.vcf > filter_flagged_less_stringent_contig_vcf_files.list
+# ls filtered*less_stringent.vcf > filtered_SNPs_only_less_stringent_vcf_files.list
+# ls filtered*nearindelfilt.vcf > filtered_nearindelfilt_SNPs_only_less_stringent_vcf_files.list
+
 
 
 ## --------------------------------
@@ -171,16 +174,35 @@ ls filtered*less_stringent.vcf > filtered_SNPs_only_less_stringent_vcf_files.lis
 # gatk MergeVcfs \
 # 	-I filtered_SNPs_only_vcf_files.list \
 # 	-O all_samples_nobaseQrecal_filtered_SNPs_only.vcf.gz
+# 
+# gatk MergeVcfs \
+# 	-I filter_flagged_less_stringent_contig_vcf_files.list \
+# 	-O all_samples_nobaseQrecal_filter_flagged_less_stringent.vcf.gz
+# 
+# gatk MergeVcfs \
+# 	-I filtered_SNPs_only_less_stringent_vcf_files.list \
+# 	-O all_samples_nobaseQrecal_filtered_SNPs_only_less_stringent.vcf.gz
+# 
+# gatk MergeVcfs \
+# 	-I filtered_nearindelfilt_SNPs_only_less_stringent_vcf_files.list \
+# 	-O all_samples_nobaseQrecal_filtered_SNPs_only_less_stringent_nearindelfilt.vcf.gz
+	
+## filter further by removing sites with > 20% missing data
+vcftools \
+--gzvcf all_samples_nobaseQrecal_filtered_SNPs_only_less_stringent_nearindelfilt.vcf.gz \
+--recode --recode-INFO-all \
+--out all_samples_nobaseQrecal_filtered_SNPs_only_less_stringent_nearindelfilt_missdatafilt \
+--max-missing 0.8
 
-gatk MergeVcfs \
-	-I filter_flagged_less_stringent_contig_vcf_files.list \
-	-O all_samples_nobaseQrecal_filter_flagged_less_stringent.vcf.gz
+gzip all_samples_nobaseQrecal_filtered_SNPs_only_less_stringent_nearindelfilt_missdatafilt.recode.vcf
 
-gatk MergeVcfs \
-	-I filtered_SNPs_only_less_stringent_vcf_files.list \
-	-O all_samples_nobaseQrecal_filtered_SNPs_only_less_stringent.vcf.gz
+## --------------------------------
+## Copy VCF files to home directory
+cp all_samples_nobaseQrecal_filtered_SNPs_only_less_stringent_nearindelfilt.vcf.gz \
+/home/aubaxh002/03_snp_calling/output/
 
-
+cp all_samples_nobaseQrecal_filtered_SNPs_only_less_stringent_nearindelfilt_missdatafilt.recode.vcf.gz \
+/home/aubaxh002/03_snp_calling/output/
 
 
 
