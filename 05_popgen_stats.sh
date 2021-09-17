@@ -81,36 +81,61 @@ module load vcftools/0.1.14
 
 ## -- All samples -- further het filtered set
 ## nucleotide diversity in windows (settings borrowed from SM)
-vcftools --gzvcf \
-/scratch/aubaxh002_06_morefilt_and_ROHs/allsamps_het_filt.recode.vcf.gz \
---window-pi 100000 --window-pi-step 50000 \
---out allsamps_hetfiltnucdivers
-
-## and a bunch of other things
-for i in depth het hardy relatedness relatedness2 missing-indv missing-site
-	do
-	vcftools \
-	--gzvcf /scratch/aubaxh002_06_morefilt_and_ROHs/allsamps_het_filt.recode.vcf.gz \
-	--$i --out allsamps_hetfilt_${i}
-	done
-
-
-## -- All samples -- further het and MAF filtered set
+# vcftools --gzvcf \
+# /scratch/aubaxh002_06_morefilt_and_ROHs/allsamps_het_filt.recode.vcf.gz \
+# --window-pi 100000 --window-pi-step 50000 \
+# --out allsamps_hetfiltnucdivers
+# 
+# ## and a bunch of other things
+# for i in depth het hardy relatedness relatedness2 missing-indv missing-site
+# 	do
+# 	vcftools \
+# 	--gzvcf /scratch/aubaxh002_06_morefilt_and_ROHs/allsamps_het_filt.recode.vcf.gz \
+# 	--$i --out allsamps_hetfilt_${i}
+# 	done
+# 
+# 
+# ## -- All samples -- further het and MAF filtered set
+# ## nucleotide diversity in windows (settings borrowed from SM)
+# vcftools --gzvcf \
+# /scratch/aubaxh002_06_morefilt_and_ROHs/allsamps_maf_and_het_filt.recode.vcf.gz \
+# --window-pi 100000 --window-pi-step 50000 \
+# --out allsamps_mafandhetfiltnucdivers
+# 
+# ## and a bunch of other things
+# for i in depth het hardy relatedness relatedness2 missing-indv missing-site
+# 	do
+# 	vcftools \
+# 	--gzvcf /scratch/aubaxh002_06_morefilt_and_ROHs/allsamps_maf_and_het_filt.recode.vcf.gz \
+# 	--$i --out allsamps_mafandhetfilt_${i}
+# 	done
+	
+	
+## -- All samples -- het filtered, on filtered contigs, LD pruned
 ## nucleotide diversity in windows (settings borrowed from SM)
+module load samtools
+
+bgzip /scratch/aubaxh002_07_genic_and_ibs/allsamps_het_filt_filtcontigs_LDpruned.recode.vcf
+
+cp /scratch/aubaxh002_07_genic_and_ibs/allsamps_het_filt_filtcontigs_LDpruned.recode.vcf.gz \
+/home/$USER/$PROJ/output/
+
 vcftools --gzvcf \
-/scratch/aubaxh002_06_morefilt_and_ROHs/allsamps_maf_and_het_filt.recode.vcf.gz \
+/scratch/aubaxh002_07_genic_and_ibs/allsamps_het_filt_filtcontigs_LDpruned.recode.vcf.gz \
 --window-pi 100000 --window-pi-step 50000 \
---out allsamps_mafandhetfiltnucdivers
+--out allsamps_hetfilt_filtcontigs_LDpruned_nucdivers
 
 ## and a bunch of other things
 for i in depth het hardy relatedness relatedness2 missing-indv missing-site
 	do
 	vcftools \
-	--gzvcf /scratch/aubaxh002_06_morefilt_and_ROHs/allsamps_maf_and_het_filt.recode.vcf.gz \
-	--$i --out allsamps_mafandhetfilt_${i}
+	--gzvcf /scratch/aubaxh002_07_genic_and_ibs/allsamps_het_filt_filtcontigs_LDpruned.recode.vcf.gz \
+	--$i --out allsamps_hetfilt_filtcontigs_LDpruned_${i}
 	done
 	
 
 ## --------------------------------
 ## Copy results back to project output directory (in home)
 cp allsamps_* /home/$USER/$PROJ/output/
+
+mail -s '05_popgen finished' avrilharder@gmail.com <<< '05 popgen finished'
