@@ -23,20 +23,20 @@ USER=aubaxh002
 PROJ=02_read_mapping
 
 ## Set batch group
-GROUP=_group_
+GROUP=_7_
 
 ## Create a directory on /scratch
-mkdir /scratch/${USER}_${PROJ}/_group_
+mkdir /scratch/${USER}_${PROJ}/_7_
 
 ## Set permissions for directory
-chmod 700 /scratch/${USER}_${PROJ}/_group_
+chmod 700 /scratch/${USER}_${PROJ}/_7_
 
 ##  Copy input files to scratch
 cp /home/$USER/$PROJ/input/hifiasm_kangaroo_rat_6cells.p_ctg.fasta.gz \
-/scratch/${USER}_${PROJ}/_group_
+/scratch/${USER}_${PROJ}/_7_
 
 ## cd into working scratch directory
-cd /scratch/${USER}_${PROJ}/_group_/
+cd /scratch/${USER}_${PROJ}/_7_/
 
 
 ## --------------------------------
@@ -56,13 +56,13 @@ while read -a line
 do
 
 bwa mem -t 20 -M hifiasm_kangaroo_rat_6cells.p_ctg.fasta.gz \
-/scratch/aubaxh002_01_read_qc_trimming/_group_/trimmed_paired_${line[0]}_L003_R1_001.fastq.gz \
-/scratch/aubaxh002_01_read_qc_trimming/_group_/trimmed_paired_${line[0]}_L003_R2_001.fastq.gz \
+/scratch/aubaxh002_01_read_qc_trimming/_7_/trimmed_paired_${line[0]}_L003_R1_001.fastq.gz \
+/scratch/aubaxh002_01_read_qc_trimming/_7_/trimmed_paired_${line[0]}_L003_R2_001.fastq.gz \
 > ${line[0]}_L003_small_genome.bam
 
 bwa mem -t 20 -M hifiasm_kangaroo_rat_6cells.p_ctg.fasta.gz \
-/scratch/aubaxh002_01_read_qc_trimming/_group_/trimmed_paired_${line[0]}_L004_R1_001.fastq.gz \
-/scratch/aubaxh002_01_read_qc_trimming/_group_/trimmed_paired_${line[0]}_L004_R2_001.fastq.gz \
+/scratch/aubaxh002_01_read_qc_trimming/_7_/trimmed_paired_${line[0]}_L004_R1_001.fastq.gz \
+/scratch/aubaxh002_01_read_qc_trimming/_7_/trimmed_paired_${line[0]}_L004_R2_001.fastq.gz \
 > ${line[0]}_L004_small_genome.bam
 
 ## add read group information to differentiate the two lanes (3 and 4)
@@ -86,7 +86,7 @@ O=sorted_${line[0]}_small_genome_rgroups.bam
 ## get some mapping stats
 samtools flagstat -@ 20 -O tsv ${line[0]}_small_genome_rgroups.bam > ${line[0]}_rgroups_flagstat_out.txt
 
-done < /home/aubaxh002/sample_lists/_group_.txt
+done < /home/aubaxh002/sample_lists/_7_.txt
 
 
 ## --------------------------------

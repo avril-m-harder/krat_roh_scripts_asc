@@ -44,9 +44,9 @@ module load bwa/0.7.12
 ## Unzip FASTA and create indexes needed for GATK Best Practices
 # gunzip hifiasm_kangaroo_rat_6cells.p_ctg.fasta.gz
 
-# bwa index hifiasm_kangaroo_rat_6cells.p_ctg.fasta
+bwa index hifiasm_kangaroo_rat_6cells.p_ctg.fasta
 
-# samtools faidx hifiasm_kangaroo_rat_6cells.p_ctg.fasta
+samtools faidx hifiasm_kangaroo_rat_6cells.p_ctg.fasta
 
 java -jar /opt/asn/apps/picard_1.79/picard_1.79/picard-tools-1.79/CreateSequenceDictionary.jar \
 REFERENCE=hifiasm_kangaroo_rat_6cells.p_ctg.fasta \

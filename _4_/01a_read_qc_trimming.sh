@@ -21,24 +21,24 @@ USER=aubaxh002
 PROJ=01_read_qc_trimming
 
 ## Set batch group
-GROUP=_group_
+GROUP=_4_
 
 ## Create a directory on /scratch
 mkdir /scratch/${USER}_${PROJ}/
-mkdir /scratch/${USER}_${PROJ}/_group_
+mkdir /scratch/${USER}_${PROJ}/_4_
 
 ## Set permissions for directory
-chmod 700 /scratch/${USER}_${PROJ}/_group_
+chmod 700 /scratch/${USER}_${PROJ}/_4_
 
 ##  Move unzipped fastq files to  dir to process
 while read -a line
 do
 	cp /home/aubaxh002/reseq_data/Harder_6914_210423A7/${line[0]}*.fastq.gz \
-	/scratch/${USER}_${PROJ}/_group_/
-done < /home/aubaxh002/sample_lists/_group_.txt
+	/scratch/${USER}_${PROJ}/_4_/
+done < /home/aubaxh002/sample_lists/_4_.txt
 
 ## cd into working scratch directory
-cd /scratch/${USER}_${PROJ}/_group_/
+cd /scratch/${USER}_${PROJ}/_4_/
 
 ## make output folder for fastqc output
 # mkdir ./output/
@@ -57,7 +57,7 @@ module load fastqc/0.10.1
 # 	${line[0]}_L003_R2_001.fastq.gz\
 # 	${line[0]}_L004_R1_001.fastq.gz\
 # 	${line[0]}_L004_R2_001.fastq.gz
-# done < /home/aubaxh002/sample_lists/_group_.txt
+# done < /home/aubaxh002/sample_lists/_4_.txt
 
 ## Run Trimmomatic to clean and trim adapters from reads using custom adapter.fa file,
 ## then run FastQC on the trimmed files
@@ -94,10 +94,10 @@ do
 # 	trimmed_unpaired_${line[0]}_L004_R1_001.fastq.gz\
 # 	trimmed_paired_${line[0]}_L004_R2_001.fastq.gz\
 # 	trimmed_unpaired_${line[0]}_L004_R2_001.fastq.gz
-done < /home/aubaxh002/sample_lists/_group_.txt
+done < /home/aubaxh002/sample_lists/_4_.txt
 
 
 ## --------------------------------
 
 ## Copy results back to project output directory (in home)
-# cp /scratch/${USER}_${PROJ}/_group_/output/* /home/$USER/$PROJ/output/
+# cp /scratch/${USER}_${PROJ}/_4_/output/* /home/$USER/$PROJ/output/
