@@ -49,93 +49,37 @@ module load vcftools/0.1.14
 # cp /home/aubaxh002/03_snp_calling/output/all_samples_nobaseQrecal_filtered_SNPs_only_less_stringent_nearindelfilt_missdatafilt.recode.vcf.gz \
 # ./allsamples_fullfilt.vcf.gz
 
+cp allsamps_het_filt_filtcontigs_LDpruned_MAF.05.recode.vcf.gz allsamps_MAFLD.vcf.gz
+
 
 ## --------------------------------
 ## Calculate some stats
-## -- All samples -- "final" filtered set
 ## nucleotide diversity in windows (settings borrowed from SM)
-# vcftools --gzvcf allsamples_fullfilt.vcf.gz --window-pi 100000 --window-pi-step 50000 \
-# --out allsamps_nucdivers
-# 
-# ## per-sample mean depth (just to cross-check with other output)
-# vcftools --gzvcf allsamples_fullfilt.vcf.gz --depth --out allsamps_meandepth
-# 
-# ## individual heterozygosity (F estimated using a method of moments)
-# vcftools --gzvcf allsamples_fullfilt.vcf.gz --het --out allsamps_heterozyg
-# 
-# ## HWE p-values
-# vcftools --gzvcf allsamples_fullfilt.vcf.gz --hardy --out allsamps_hwe
+# vcftools --gzvcf allsamps_MAFLD.vcf.gz --window-pi 100000 --window-pi-step 50000 \
+# --out allsamps_MAFLD_nucdivers
+
+## per-sample mean depth (just to cross-check with other output)
+vcftools --gzvcf allsamps_MAFLD.vcf.gz --depth --out allsamps_MAFLD_meandepth
+
+## individual heterozygosity (F estimated using a method of moments)
+vcftools --gzvcf allsamps_MAFLD.vcf.gz --het --out allsamps_MAFLD_heterozyg
+
+## HWE p-values
+# vcftools --gzvcf allsamps_MAFLD.vcf.gz --hardy --out allsamps_MAFLD_hwe
 # 
 # ## relatedness - not super sure on the math here
-# vcftools --gzvcf allsamples_fullfilt.vcf.gz --relatedness --out allsamps_relat1
+# vcftools --gzvcf allsamps_MAFLD.vcf.gz --relatedness --out allsamps_MAFLD_relat1
 # 
 # ## the other relatedness - method: doi:10.1093/bioinformatics/btq559
-# vcftools --gzvcf allsamples_fullfilt.vcf.gz --relatedness2 --out allsamps_relat2
-# 
-# ## summarize missingness per individual
-# vcftools --gzvcf allsamples_fullfilt.vcf.gz --missing-indv --out allsamps_indivmiss
-# 
-# ## summarize missingness per site
-# vcftools --gzvcf allsamples_fullfilt.vcf.gz --missing-site --out allsamps_sitemiss
+# vcftools --gzvcf allsamps_MAFLD.vcf.gz --relatedness2 --out allsamps_MAFLD_relat2
 
+## summarize missingness per individual
+vcftools --gzvcf allsamps_MAFLD.vcf.gz --missing-indv --out allsamps_MAFLD_indivmiss
 
-## -- All samples -- further het filtered set
-## nucleotide diversity in windows (settings borrowed from SM)
-# vcftools --gzvcf \
-# /scratch/aubaxh002_06_morefilt_and_ROHs/allsamps_het_filt.recode.vcf.gz \
-# --window-pi 100000 --window-pi-step 50000 \
-# --out allsamps_hetfiltnucdivers
-# 
-# ## and a bunch of other things
-# for i in depth het hardy relatedness relatedness2 missing-indv missing-site
-# 	do
-# 	vcftools \
-# 	--gzvcf /scratch/aubaxh002_06_morefilt_and_ROHs/allsamps_het_filt.recode.vcf.gz \
-# 	--$i --out allsamps_hetfilt_${i}
-# 	done
-# 
-# 
-# ## -- All samples -- further het and MAF filtered set
-# ## nucleotide diversity in windows (settings borrowed from SM)
-# vcftools --gzvcf \
-# /scratch/aubaxh002_06_morefilt_and_ROHs/allsamps_maf_and_het_filt.recode.vcf.gz \
-# --window-pi 100000 --window-pi-step 50000 \
-# --out allsamps_mafandhetfiltnucdivers
-# 
-# ## and a bunch of other things
-# for i in depth het hardy relatedness relatedness2 missing-indv missing-site
-# 	do
-# 	vcftools \
-# 	--gzvcf /scratch/aubaxh002_06_morefilt_and_ROHs/allsamps_maf_and_het_filt.recode.vcf.gz \
-# 	--$i --out allsamps_mafandhetfilt_${i}
-# 	done
-	
-	
-## -- All samples -- het filtered, on filtered contigs, LD pruned
-## nucleotide diversity in windows (settings borrowed from SM)
-module load samtools
+## summarize missingness per site
+# vcftools --gzvcf allsamps_MAFLD.vcf.gz --missing-site --out allsamps_MAFLD_sitemiss
 
-bgzip /scratch/aubaxh002_07_genic_and_ibs/allsamps_het_filt_filtcontigs_LDpruned.recode.vcf
-
-cp /scratch/aubaxh002_07_genic_and_ibs/allsamps_het_filt_filtcontigs_LDpruned.recode.vcf.gz \
-/home/$USER/$PROJ/output/
-
-vcftools --gzvcf \
-/scratch/aubaxh002_07_genic_and_ibs/allsamps_het_filt_filtcontigs_LDpruned.recode.vcf.gz \
---window-pi 100000 --window-pi-step 50000 \
---out allsamps_hetfilt_filtcontigs_LDpruned_nucdivers
-
-## and a bunch of other things
-for i in depth het hardy relatedness relatedness2 missing-indv missing-site
-	do
-	vcftools \
-	--gzvcf /scratch/aubaxh002_07_genic_and_ibs/allsamps_het_filt_filtcontigs_LDpruned.recode.vcf.gz \
-	--$i --out allsamps_hetfilt_filtcontigs_LDpruned_${i}
-	done
-	
 
 ## --------------------------------
 ## Copy results back to project output directory (in home)
 cp allsamps_* /home/$USER/$PROJ/output/
-
-mail -s '05_popgen finished' avrilharder@gmail.com <<< '05 popgen finished'
