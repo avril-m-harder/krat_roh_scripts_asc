@@ -32,7 +32,7 @@ chmod 700 /scratch/${USER}_${PROJ}/_group_
 ##  Move unzipped fastq files to  dir to process
 # while read -a line
 # do
-# 	cp /home/aubaxh002/reseq_data/Harder_6914_210423A7/${line[0]}*.fastq.gz \
+# 	cp /home/aubaxh002/reseq_data/Willoughby_krat.202233/${line[0]}*.fastq.gz \
 # 	/scratch/${USER}_${PROJ}/_group_/
 # done < /home/aubaxh002/krat_roh_analyses/preSNPcall_sample_lists/_group_.txt
 
@@ -45,18 +45,16 @@ cd /scratch/${USER}_${PROJ}/_group_/
 module load trimgalore/0.6.6
 module load fastqc/0.11.9
 
-## Run fastqc on all 4 read files per sample
 # mkdir pretrim_output/
 mkdir posttrim_output/
 # mkdir stdouts/
 # 
+# ## Run fastqc on all 4 read files per sample
 # while read -a line
 # do
 # 	fastqc -t 4 -o pretrim_output/ \
-# 	${line[0]}_L003_R1_001.fastq.gz\
-# 	${line[0]}_L003_R2_001.fastq.gz\
-# 	${line[0]}_L004_R1_001.fastq.gz\
-# 	${line[0]}_L004_R2_001.fastq.gz
+# 	${line[0]}_L002_R1_001.fastq.gz\
+# 	${line[0]}_L002_R2_001.fastq.gz
 # done < /home/aubaxh002/krat_roh_analyses/preSNPcall_sample_lists/_group_.txt
 # 
 # cp pretrim_output/* /home/aubaxh002/krat_roh_analyses/01_read_qc_trimming/pretrim_fastqc/
@@ -65,18 +63,12 @@ mkdir posttrim_output/
 ## then run FastQC on the trimmed files
 while read -a line
 do
-
-	trim_galore --paired --quality 20 --phred33 \
-	--fastqc_args "--outdir posttrim_output/" \
-	--length 30 \
-	${line[0]}_L003_R1_001.fastq.gz \
-	${line[0]}_L003_R2_001.fastq.gz
 	
 	trim_galore --paired --quality 20 --phred33 \
 	--fastqc_args "--outdir posttrim_output/" \
 	--length 30 \
-	${line[0]}_L004_R1_001.fastq.gz \
-	${line[0]}_L004_R2_001.fastq.gz
+	${line[0]}_L002_R1_001.fastq.gz \
+	${line[0]}_L002_R2_001.fastq.gz
 
 done < /home/aubaxh002/krat_roh_analyses/preSNPcall_sample_lists/_group_.txt
 

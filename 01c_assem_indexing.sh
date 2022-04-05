@@ -26,9 +26,6 @@ mkdir /scratch/${USER}_${PROJ}/
 ## Set permissions for directory
 chmod 700 /scratch/${USER}_${PROJ}/
 
-##  Copy input files to scratch
-cp /home/aubaxh002/02_read_mapping/input/hifiasm_kangaroo_rat_6cells.p_ctg.fasta.gz /scratch/${USER}_${PROJ}/
-
 ## cd into working scratch directory
 cd /scratch/${USER}_${PROJ}/
 
@@ -41,16 +38,23 @@ module load bwa/0.7.12
 
 
 ## --------------------------------
+## Download assembly as published
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/019/054/845/GCA_019054845.1_ASM1905484v1/GCA_019054845.1_ASM1905484v1_genomic.fna.gz
+
+mv GCA_019054845.1_ASM1905484v1_genomic.fna.gz dspec_genbank_assem.fna.gz
+
+
+## --------------------------------
 ## Unzip FASTA and create indexes needed for GATK Best Practices
-# gunzip hifiasm_kangaroo_rat_6cells.p_ctg.fasta.gz
+gunzip dspec_genbank_assem.fna.gz
 
-bwa index hifiasm_kangaroo_rat_6cells.p_ctg.fasta
-
-samtools faidx hifiasm_kangaroo_rat_6cells.p_ctg.fasta
-
-java -jar /opt/asn/apps/picard_1.79/picard_1.79/picard-tools-1.79/CreateSequenceDictionary.jar \
-REFERENCE=hifiasm_kangaroo_rat_6cells.p_ctg.fasta \
-OUTPUT=hifiasm_kangaroo_rat_6cells.p_ctg.dictionary.bam
+# bwa index hifiasm_kangaroo_rat_6cells.p_ctg.fasta
+# 
+# samtools faidx hifiasm_kangaroo_rat_6cells.p_ctg.fasta
+# 
+# java -jar /opt/asn/apps/picard_1.79/picard_1.79/picard-tools-1.79/CreateSequenceDictionary.jar \
+# REFERENCE=hifiasm_kangaroo_rat_6cells.p_ctg.fasta \
+# OUTPUT=hifiasm_kangaroo_rat_6cells.p_ctg.dictionary.bam
 
 
 ## --------------------------------
